@@ -38,10 +38,20 @@ namespace HashTable
         virtual bool Update(string _old, string _new)
         {
             if (this->Remove(_old))
-                this->Add(_new);
+                return this->Add(_new);
             return false;
         }
-        virtual bool Remove(string _value) = 0;
+        virtual bool Remove(string _value)
+        {
+            int index = this->Retrieve(_value);
+
+            if (index == -1)
+                return false;
+
+            this->arr->at(index) = "🔴";
+            this->current--;
+            return true;
+        }
 
         virtual bool operator[](string _value)
         {
@@ -98,18 +108,6 @@ namespace HashTable
 
             return this->arr->at(hash).empty() || this->arr->at(hash) == "🔴" ? -1 : hash;
         }
-
-        bool Remove(string _value) override
-        {
-            int index = this->Retrieve(_value);
-
-            if (index == -1)
-                return false;
-
-            this->arr->at(index) = "🔴";
-            this->current--;
-            return true;
-        }
     };
 
     struct Hashtable_quadratic : public Hashtable
@@ -146,25 +144,13 @@ namespace HashTable
 
             while (!this->arr->at(hash).empty() && this->arr->at(hash) != "🔴")
             {
-                if (this->arr->at(hash) != _value)
+                if (this->arr->at(hash) == _value)
                     return hash;
                 increment++;
                 hash = (starthash + increment * increment) % this->max;
             }
 
             return -1;
-        }
-
-        bool Remove(string _value) override
-        {
-            int index = this->Retrieve(_value);
-
-            if (index == -1)
-                return false;
-
-            this->arr->at(index) = "🔴";
-            this->current--;
-            return true;
         }
     };
 
@@ -212,18 +198,6 @@ namespace HashTable
             }
 
             return -1;
-        }
-
-        bool Remove(string _value) override
-        {
-            int index = this->Retrieve(_value);
-
-            if (index == -1)
-                return false;
-
-            this->arr->at(index) = "🔴";
-            this->current--;
-            return true;
         }
     };
 
