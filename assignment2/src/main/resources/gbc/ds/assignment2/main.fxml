@@ -30,13 +30,15 @@
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="95.0" minWidth="10.0" prefWidth="50.0" />
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints maxHeight="175.0" minHeight="10.0" percentHeight="11.0" prefHeight="63.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="175.0" minHeight="10.0" percentHeight="5.0" prefHeight="63.0" vgrow="SOMETIMES" />
                 <RowConstraints maxHeight="175.0" minHeight="10.0" percentHeight="13.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints maxHeight="222.0" minHeight="10.0" percentHeight="13.0" prefHeight="35.0" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="222.0" minHeight="10.0" percentHeight="13.0" prefHeight="26.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="222.0" minHeight="10.0" percentHeight="7.0" prefHeight="26.0" vgrow="SOMETIMES" />
                 <RowConstraints maxHeight="161.0" minHeight="10.0" percentHeight="13.0" prefHeight="29.0" vgrow="SOMETIMES" />
                 <RowConstraints maxHeight="117.0" minHeight="1.0" percentHeight="25.0" prefHeight="64.0" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="65.0" minHeight="0.0" percentHeight="11.0" prefHeight="0.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="65.0" minHeight="0.0" percentHeight="7.0" prefHeight="0.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="65.0" minHeight="10.0" percentHeight="10.0" prefHeight="59.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="65.0" minHeight="10.0" percentHeight="15.0" prefHeight="26.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
                 <Button mnemonicParsing="false" onAction="#onGoClick" prefHeight="26.0" prefWidth="56.0" text="Go" GridPane.columnIndex="1" GridPane.rowIndex="2">
@@ -60,6 +62,28 @@
                </children>
             </GridPane>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Enter your name:" textAlignment="CENTER" wrappingWidth="203.7294921875" GridPane.rowIndex="1" />
+            <GridPane fx:id="symbols_grid" GridPane.columnSpan="2" GridPane.rowIndex="8">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onSymbolClick" prefHeight="26.0" prefWidth="40.0" text="X's" textAlignment="CENTER" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+                     <GridPane.margin>
+                        <Insets right="5.0" />
+                     </GridPane.margin>
+                  </Button>
+                  <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onSymbolClick" prefHeight="26.0" prefWidth="40.0" text="O's" GridPane.columnIndex="1" GridPane.halignment="LEFT">
+                     <GridPane.margin>
+                        <Insets left="5.0" />
+                     </GridPane.margin>
+                  </Button>
+               </children>
+            </GridPane>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Symbol" textAlignment="CENTER" wrappingWidth="202.7294921875" GridPane.rowIndex="7" />
             </children>
             <GridPane.margin>
                 <Insets left="15.0" right="15.0" />

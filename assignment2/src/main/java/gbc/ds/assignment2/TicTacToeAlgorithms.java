@@ -65,7 +65,7 @@ public class TicTacToeAlgorithms {
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int k = 0; k < BOARD_SIZE; k++) {
                 if (_board[i][k] == '_') {
-                    _board[i][k] = _is_max ? TicTacToeController.player : TicTacToeController.opponent;
+                    _board[i][k] = _is_max ? TicTacToeController.opponent : TicTacToeController.player;
                     if (_is_max)
                         best = Math.max(best, minMax(_board, false));
                     else

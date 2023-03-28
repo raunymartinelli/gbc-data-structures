@@ -25,8 +25,8 @@ import java.util.ResourceBundle;
 public class TicTacToeController implements Initializable {
     public static final int BOARD_SIZE = 3;
     public static final char[][] BOARD = {{'_', '_', '_'}, {'_', '_', '_'}, {'_', '_', '_'}};
-    public static final char player = 'o';
-    public static final char opponent = 'x';
+    public static char player = 'o';
+    public static char opponent = 'x';
     final Color BUTTON_COLOR = Color.WHITE;
     final Color HOVER_COLOR = Color.DARKGRAY;
     final Color CLICKED_COLOR = Color.LIGHTBLUE;
@@ -35,6 +35,8 @@ public class TicTacToeController implements Initializable {
     private GridPane tictactoe_grid;
     @FXML
     private GridPane difficulty_grid;
+    @FXML
+    private GridPane symbols_grid;
     @FXML
     private GridPane details_grid;
     @FXML
@@ -48,6 +50,7 @@ public class TicTacToeController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         tictactoe_grid.setDisable(true);
         difficulty_grid.setDisable(true);
+        symbols_grid.setDisable(true);
 
         for (Node node : tictactoe_grid.getChildren()) {
             if (node instanceof Pane pane) {
@@ -62,12 +65,8 @@ public class TicTacToeController implements Initializable {
             }
         }
 
-        for (Node node : difficulty_grid.getChildren()) {
-            Button btn = (Button) node;
-            btn.setBackground(new Background(new BackgroundFill(BUTTON_COLOR, CornerRadii.EMPTY, Insets.EMPTY)));
-            btn.setOnMouseEntered(event -> btn.setBackground(new Background(new BackgroundFill(HOVER_COLOR, CornerRadii.EMPTY, Insets.EMPTY))));
-            btn.setOnMouseExited(event -> btn.setBackground(new Background(new BackgroundFill(BUTTON_COLOR, CornerRadii.EMPTY, Insets.EMPTY))));
-        }
+        configButtonGroup(difficulty_grid);
+        configButtonGroup(symbols_grid);
 
         System.out.println(tictactoe_grid.getChildren());
     }
@@ -147,15 +146,12 @@ public class TicTacToeController implements Initializable {
             node.setDisable(false);
         }
 
-        for (Node node : difficulty_grid.getChildren()) {
-            Button btn = (Button) node;
-            btn.setBackground(new Background(new BackgroundFill(BUTTON_COLOR, CornerRadii.EMPTY, Insets.EMPTY)));
-            btn.setOnMouseEntered(event -> btn.setBackground(new Background(new BackgroundFill(HOVER_COLOR, CornerRadii.EMPTY, Insets.EMPTY))));
-            btn.setOnMouseExited(event -> btn.setBackground(new Background(new BackgroundFill(BUTTON_COLOR, CornerRadii.EMPTY, Insets.EMPTY))));
-        }
+        configButtonGroup(difficulty_grid);
+        configButtonGroup(symbols_grid);
 
         tictactoe_grid.setDisable(true);
         difficulty_grid.setDisable(true);
+        symbols_grid.setDisable(true);
 
         for (int row = 0; row < BOARD_SIZE; row++) {
             for (int col = 0; col < BOARD_SIZE; col++) {
@@ -168,6 +164,27 @@ public class TicTacToeController implements Initializable {
         for (Node node : tictactoe_grid.getChildren()) {
             if (node instanceof Pane pane) {
                 pane.getChildren().clear();
+            }
+        }
+    }
+
+    private void configButtonGroup(GridPane _grid) {
+        for (Node node : _grid.getChildren()) {
+            Button btn = (Button) node;
+            btn.setBackground(new Background(new BackgroundFill(BUTTON_COLOR, CornerRadii.EMPTY, Insets.EMPTY)));
+            btn.setOnMouseEntered(event -> btn.setBackground(new Background(new BackgroundFill(HOVER_COLOR, CornerRadii.EMPTY, Insets.EMPTY))));
+            btn.setOnMouseExited(event -> btn.setBackground(new Background(new BackgroundFill(BUTTON_COLOR, CornerRadii.EMPTY, Insets.EMPTY))));
+        }
+    }
+
+    private void onClickButtonGroup(GridPane _grid, Button _active) {
+        for (Node node : _grid.getChildren()) {
+            Button btn = (Button) node;
+            btn.setBackground(new Background(new BackgroundFill(BUTTON_COLOR, CornerRadii.EMPTY, Insets.EMPTY)));
+            btn.setOnMouseEntered(null);
+            btn.setOnMouseExited(null);
+            if (btn.equals(_active)) {
+                btn.setBackground(new Background(new BackgroundFill(HOVER_COLOR, CornerRadii.EMPTY, Insets.EMPTY)));
             }
         }
     }
@@ -186,18 +203,21 @@ public class TicTacToeController implements Initializable {
     @FXML
     protected void onDifficultyClick(ActionEvent _event) {
         Button btn_source = (Button) _event.getSource();
-        for (Node node : difficulty_grid.getChildren()) {
-            Button btn = (Button) node;
-            btn.setBackground(new Background(new BackgroundFill(BUTTON_COLOR, CornerRadii.EMPTY, Insets.EMPTY)));
-            btn.setOnMouseEntered(null);
-            btn.setOnMouseExited(null);
-            if (btn.equals(btn_source)) {
-                btn.setBackground(new Background(new BackgroundFill(HOVER_COLOR, CornerRadii.EMPTY, Insets.EMPTY)));
-                difficulty = btn.getText();
-            }
-        }
+        onClickButtonGroup(difficulty_grid, btn_source);
+        difficulty = btn_source.getText();
 
         difficulty_grid.setDisable(true);
+        symbols_grid.setDisable(false);
+    }
+
+    @FXML
+    protected void onSymbolClick(ActionEvent _event) {
+        Button btn_source = (Button) _event.getSource();
+        onClickButtonGroup(symbols_grid, btn_source);
+        player = btn_source.getText().equals("O's") ? 'o' : 'x';
+        opponent = player == 'o' ? 'x' : 'o';
+
+        symbols_grid.setDisable(true);
         tictactoe_grid.setDisable(false);
     }
 }
