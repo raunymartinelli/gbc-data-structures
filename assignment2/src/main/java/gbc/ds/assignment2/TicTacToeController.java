@@ -1,51 +1,203 @@
 package gbc.ds.assignment2;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.util.Pair;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.Stage;
 
 import java.net.URL;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class TicTacToeController implements Initializable {
-
-    private final Integer[][] board = new Integer[3][3];
+    public static final int BOARD_SIZE = 3;
+    public static final char[][] BOARD = {{'_', '_', '_'}, {'_', '_', '_'}, {'_', '_', '_'}};
+    public static final char player = 'o';
+    public static final char opponent = 'x';
+    final Color BUTTON_COLOR = Color.WHITE;
+    final Color HOVER_COLOR = Color.DARKGRAY;
+    final Color CLICKED_COLOR = Color.LIGHTBLUE;
 
     @FXML
-    private Label welcomeText;
-
+    private GridPane tictactoe_grid;
     @FXML
-    protected void onHelloButtonClick() {
-        welcomeText.setText("Welcome to JavaFX Application!");
-    }
+    private GridPane difficulty_grid;
+    @FXML
+    private GridPane details_grid;
+    @FXML
+    private TextField txt_name;
+
+    private String player_name;
+    private String difficulty;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        tictactoe_grid.setDisable(true);
+        difficulty_grid.setDisable(true);
 
+        for (Node node : tictactoe_grid.getChildren()) {
+            if (node instanceof Pane pane) {
+                pane.setBackground(new Background(new BackgroundFill(BUTTON_COLOR, CornerRadii.EMPTY, Insets.EMPTY)));
+                pane.setOnMouseEntered(event -> pane.setBackground(new Background(new BackgroundFill(HOVER_COLOR, CornerRadii.EMPTY, Insets.EMPTY))));
+                pane.setOnMouseExited(event -> pane.setBackground(new Background(new BackgroundFill(BUTTON_COLOR, CornerRadii.EMPTY, Insets.EMPTY))));
+                pane.setOnMouseClicked(event -> {
+                    Pane p = (Pane) node;
+                    onPositionClicked(p);
+                    pane.setBackground(new Background(new BackgroundFill(CLICKED_COLOR, CornerRadii.EMPTY, Insets.EMPTY)));
+                });
+            }
+        }
+
+        for (Node node : difficulty_grid.getChildren()) {
+            Button btn = (Button) node;
+            btn.setBackground(new Background(new BackgroundFill(BUTTON_COLOR, CornerRadii.EMPTY, Insets.EMPTY)));
+            btn.setOnMouseEntered(event -> btn.setBackground(new Background(new BackgroundFill(HOVER_COLOR, CornerRadii.EMPTY, Insets.EMPTY))));
+            btn.setOnMouseExited(event -> btn.setBackground(new Background(new BackgroundFill(BUTTON_COLOR, CornerRadii.EMPTY, Insets.EMPTY))));
+        }
+
+        System.out.println(tictactoe_grid.getChildren());
     }
 
-    // Task 1
-    private Pair<Integer, Integer> getRandomPosition() throws Exception /*TODO: Remove the exception thrown*/ {
-        // TODO: Get two numbers from 0 - 2 considerations:
-        //          - Only randomize the numbers that are not 0 in the board.
-        //          - You can randomize a 1D array and then transform to 2D position.
-        throw new Exception("Not implemented yet");
+    private void onPositionClicked(Pane _pane) {
+        if (_pane == null) return;
+
+        Integer row = GridPane.getRowIndex(_pane);
+        Integer col = GridPane.getColumnIndex(_pane);
+        if (row == null || col == null) return;
+        if (row == -1 || col == -1) return;
+        if (!TicTacToeAlgorithms.isValidMove(BOARD, row, col)) return;
+
+        Move move = new Move(row, col);
+        BOARD[row][col] = player;
+        setPanePlay(_pane, player);
+
+        if (checkWinState()) return;
+
+        opponentTurn(move);
     }
 
-    // Task 2
-    // TODO: Add below all the functions for detecting a click in a Pane inside the GridPane.
-    //          - The function must return the position of the Pane, for instance
-    //                  if I click Pane in position (0, 1) the function must return that coordinate.
-    //                  hint: for returning the coordinate, use a Pair<Integer, Integer>
-    //          - In case there is not a way to detect which Pane is begin hit and return the coordinate,
-    //                  please, make a field in this class and set the coordinate to the field.
+    private boolean checkWinState() {
+        String state = TicTacToeAlgorithms.checkWinState(BOARD);
+        String header_msg = "";
+        if (state.equals("")) return false;
+        if (state.equals("Tie")) header_msg = "It's a Tie!";
+        else header_msg = state + " Wins!";
 
-    // Task 3
-    // TODO: Add below all the functions for the game to start, the user must enter his/her name and then hit GO,
-    //          When GO is hit, Difficulty (Week & Intelligent AI) must become enabled and the user must select one of them,
-    //          there must be a function that sets the difficulty to a field in this class for later usage.
-    //          After you select a difficulty the player must be able to click a Pane.
-    //          Bonus: make the Pane to glow of something when you hover it.
-    //          Bonus 2: make the Pane to have a click animation (change color or something, nothing fancy).
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(header_msg);
+        alert.setContentText("Thanks for playing " + player_name + "!");
+        alert.showAndWait();
+
+        tictactoe_grid.setDisable(true);
+        resetGame();
+        return true;
+    }
+
+    private void opponentTurn(Move _player_move) {
+        Move move = Objects.equals(difficulty, "Week AI") ? TicTacToeAlgorithms.getRandomPosition(BOARD) :
+                TicTacToeAlgorithms.findBestMove(BOARD, _player_move.row, _player_move.col);
+        if (move.equals(Move.emptyMove())) return;
+        BOARD[move.row][move.col] = opponent;
+        Pane opponent_pane = (Pane) getNodeFromTicTacToeGrid(move.row, move.col);
+        setPanePlay(opponent_pane, opponent);
+        checkWinState();
+    }
+
+    private void setPanePlay(Pane _pane, char _play) {
+        if (_pane == null) return;
+
+        Label lb = new Label();
+        lb.textProperty().set("" + _play);
+        lb.textAlignmentProperty().set(TextAlignment.CENTER);
+        lb.alignmentProperty().set(Pos.CENTER);
+        lb.prefHeightProperty().bind(_pane.heightProperty());
+        lb.prefWidthProperty().bind(_pane.widthProperty());
+        lb.fontProperty().set(Font.font("Noto Sans", FontWeight.SEMI_BOLD, 30));
+        _pane.getChildren().add(lb);
+    }
+
+    private Node getNodeFromTicTacToeGrid(int _row, int _col) {
+        for (Node node : tictactoe_grid.getChildren()) {
+            Integer columnIndex = GridPane.getColumnIndex(node);
+            Integer rowIndex = GridPane.getRowIndex(node);
+            if (columnIndex != null && rowIndex != null && columnIndex == _col && rowIndex == _row) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    private void resetGame() {
+        for (Node node : details_grid.getChildren()) {
+            node.setDisable(false);
+        }
+
+        for (Node node : difficulty_grid.getChildren()) {
+            Button btn = (Button) node;
+            btn.setBackground(new Background(new BackgroundFill(BUTTON_COLOR, CornerRadii.EMPTY, Insets.EMPTY)));
+            btn.setOnMouseEntered(event -> btn.setBackground(new Background(new BackgroundFill(HOVER_COLOR, CornerRadii.EMPTY, Insets.EMPTY))));
+            btn.setOnMouseExited(event -> btn.setBackground(new Background(new BackgroundFill(BUTTON_COLOR, CornerRadii.EMPTY, Insets.EMPTY))));
+        }
+
+        tictactoe_grid.setDisable(true);
+        difficulty_grid.setDisable(true);
+
+        for (int row = 0; row < BOARD_SIZE; row++) {
+            for (int col = 0; col < BOARD_SIZE; col++) {
+                BOARD[row][col] = '_';
+            }
+        }
+
+        txt_name.setText("");
+
+        for (Node node : tictactoe_grid.getChildren()) {
+            if (node instanceof Pane pane) {
+                pane.getChildren().clear();
+            }
+        }
+    }
+
+    @FXML
+    protected void onGoClick(ActionEvent _event) {
+        String name = txt_name.getText().trim();
+        if (name.equals("")) return;
+
+        player_name = name;
+        difficulty_grid.setDisable(false);
+        txt_name.setDisable(true);
+        ((Node) _event.getSource()).setDisable(true);
+    }
+
+    @FXML
+    protected void onDifficultyClick(ActionEvent _event) {
+        Button btn_source = (Button) _event.getSource();
+        for (Node node : difficulty_grid.getChildren()) {
+            Button btn = (Button) node;
+            btn.setBackground(new Background(new BackgroundFill(BUTTON_COLOR, CornerRadii.EMPTY, Insets.EMPTY)));
+            btn.setOnMouseEntered(null);
+            btn.setOnMouseExited(null);
+            if (btn.equals(btn_source)) {
+                btn.setBackground(new Background(new BackgroundFill(HOVER_COLOR, CornerRadii.EMPTY, Insets.EMPTY)));
+                difficulty = btn.getText();
+            }
+        }
+
+        difficulty_grid.setDisable(true);
+        tictactoe_grid.setDisable(false);
+    }
 }
