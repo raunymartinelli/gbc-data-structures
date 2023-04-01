@@ -27,4 +27,9 @@ public class Move {
             return this.row == m.getRow() && this.col == m.getCol();
         } else return super.equals(obj);
     }
+
+    public static Move copyMove(Move _move)
+    {
+        return new Move(_move.getRow(), _move.getCol());
+    }
 }

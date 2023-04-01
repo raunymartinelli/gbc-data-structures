@@ -7,6 +7,14 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/*
+* Made with love by:
+*   Bruno Ramirez, 101380203
+*   Richard Wilson, 101370635
+*   Rauny Martinelli, 101333371
+*   Lucas Martinho Furtado, 101321576
+ * */
+
 public class TicTacToeApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {

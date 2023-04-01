@@ -6,20 +6,17 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.Stage;
 
 import java.net.URL;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 public class TicTacToeController implements Initializable {
@@ -109,7 +106,7 @@ public class TicTacToeController implements Initializable {
 
     private void opponentTurn(Move _player_move) {
         Move move = Objects.equals(difficulty, "Week AI") ? TicTacToeAlgorithms.getRandomPosition(BOARD) :
-                TicTacToeAlgorithms.findBestMove(BOARD, _player_move.row, _player_move.col);
+                TicTacToeAlgorithms.findBestMove(BOARD); //, _player_move.row, _player_move.col
         if (move.equals(Move.emptyMove())) return;
         BOARD[move.row][move.col] = opponent;
         Pane opponent_pane = (Pane) getNodeFromTicTacToeGrid(move.row, move.col);
@@ -218,6 +215,36 @@ public class TicTacToeController implements Initializable {
         opponent = player == 'o' ? 'x' : 'o';
 
         symbols_grid.setDisable(true);
+
+//        Move m = TicTacToeAlgorithms.findBestMove(BOARD, new Random().nextInt(0, 2), new Random().nextInt(0, 2));
+//        while(!(m.col == 1 && m.row == 1))
+//        {
+//            int px = new Random().nextInt(0, 3);
+//            int py = new Random().nextInt(0, 3);
+//            m = TicTacToeAlgorithms.findBestMove(BOARD, px, py);
+//        }
+
+        if (UserFirstAskAlert().getButtonData().equals(ButtonBar.ButtonData.NO))
+            opponentTurn(new Move(new Random().nextInt(0, 2), new Random().nextInt(0, 2))); //new Random().nextInt(0, 2), new Random().nextInt(0, 2)
+
         tictactoe_grid.setDisable(false);
+    }
+
+    private ButtonType UserFirstAskAlert() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirm first player");
+        alert.setHeaderText("Does player want to go first?");
+
+        ButtonType btnyes = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+        ButtonType btnno = new ButtonType("No", ButtonBar.ButtonData.NO);
+
+        alert.getButtonTypes().setAll(btnyes, btnno);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        while (result.isEmpty()) {
+            result = alert.showAndWait();
+        }
+
+        return result.get();
     }
 }
