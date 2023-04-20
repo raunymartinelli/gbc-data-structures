@@ -1,4 +1,4 @@
-# Data Structures ~ by Bruno with ❤️
+# Data Structures ~ by Bruno and Team with ❤️
 
 ## Table of contents
 
